@@ -1,0 +1,89 @@
+graph:
+  - id: user_query
+    type: HttpTrigger
+    outputs: [select_sources]
+
+  - id: select_sources
+    type: Function
+    code: |
+      # returns list of sources to query
+      return ["moneycontrol.com","cnbc.com","bloomberg.com","economic-times.example"]
+    outputs: [ingest]
+
+  - id: ingest
+    type: Scrape/RSS
+    params:
+      sources: ${select_sources.output}
+      keywords: ["stocks", "buy", "market", "earnings", "merger"]
+      timeframe_hours: 48
+    outputs: [parse]
+
+  - id: parse
+    type: Function
+    code: |
+      # convert scraped article -> {title, text, url, published_at, source}
+    outputs: [categorize]
+
+  - id: categorize
+    type: LLM
+    params:
+       model: gpt-4o-mini  # or finetuned model
+       prompt: ${PROMPT_CATEGORY}
+       temperature: 0.0
+    outputs: [extract_events, rate_lookup]
+
+  - id: extract_events
+    type: LLM
+    params:
+       model: gpt-4o-mini
+       prompt: ${PROMPT_EXTRACT}
+       temperature: 0.0
+    outputs: [weight_sources]
+
+  - id: rate_lookup
+    type: DBQuery
+    params:
+      sql: >
+        SELECT source_id, rating FROM news_ratings
+        WHERE source_id = :source AND category_id = :category
+    outputs: [weight_sources]
+
+  - id: weight_sources
+    type: Function
+    code: |
+      # compute article weight = f(source_rating, recency_decay, llm_conf)
+      # outputs aggregated_context
+    outputs: [predict]
+
+  - id: predict
+    type: LLM
+    params:
+      model: gpt-4o-mini
+      prompt: ${PROMPT_PREDICT}  # includes aggregated_context and weights
+      temperature: 0.1
+    outputs: [record_prediction, respond_user]
+
+  - id: record_prediction
+    type: DBInsert
+    params:
+      table: predictions
+      fields: [source_ids, category_id, stocks_list, predicted_at, target_date]
+    outputs: [schedule_evaluation]
+
+  - id: schedule_evaluation
+    type: Scheduler
+    params:
+      run_at: ${predicted_at + 1 day}
+      job: evaluate_outcome
+
+  - id: evaluate_outcome
+    type: Function
+    code: |
+      # fetch market price, compute outcome, insert feedback record
+    outputs: [rating_updater]
+
+  - id: rating_updater
+    type: PythonFunction
+    code: |
+      # call update_news_rating(prediction_id, outcome, star_rating=None)
+    outputs: [done]

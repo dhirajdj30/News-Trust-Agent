@@ -1,0 +1,97 @@
+# Categorization prompt (LLM node)
+
+System: You are a classifier. Given an article title and content, output JSON with:
+- category: one of [Finance, Seasonal, Sports, Politics, Tech, Company, M&A, SupplyChain, Other]
+- category_confidence: 0.0-1.0
+- short_reason: one-sentence justification
+
+User:
+Title: {title}
+Content: {text}
+
+Respond in strict JSON only.
+
+# Event extraction prompt (LLM node)
+System: Extract market-relevant events and implied actors from the article. Output JSON array, each item:
+- event_summary: short summary
+- affected_industries: list (e.g., "umbrella manufacturers", "banking", "steel")
+- implied_signal: "positive"|"negative"|"neutral"
+- confidence: 0.0-1.0
+
+User:
+Article title: {title}
+Article text: {text}
+
+
+# Prediction prompt (LLM aggregator)
+System: You are a financial-assistant. Use the following weighted news items to suggest the top 5 stocks to buy for the next trading day. Consider weights: higher weights are more trustworthy. Provide:
+- top_5: list of objects {symbol, rationale, confidence_score(0-1)}
+- provenance: list of top 3 contributing articles with source_names and weights
+
+User:
+Context: {aggregated_articles_with_weights}
+Constraints:
+- Provide symbols only from exchanges [NSE,BSE,NASDAQ] (or as per user)
+- No speculative / illegal advice. Keep it short.
+
+Respond in JSON.
+
+
+
+# 5) How to compute article weight & combine sources (simple, interpretable approach)
+
+# Compute each article’s weight as:
+
+# weight = source_rating_normalized * llm_confidence * recency_factor
+
+
+# Where:
+
+# source_rating_normalized = rating / 10 (if ratings 0–10)
+
+# llm_confidence from Categorize/Extract nodes (0–1)
+
+# recency_factor = exp(-lambda * hours_since_published) (lambda e.g., 0.05)
+
+# Then normalize weights across all candidate articles (divide by sum). Use these normalized weights as importance when prompting the PredictionNode.
+
+# Aggregation algorithm (pseudo)
+# for article in articles:
+#     hours = (now - article.published_at).total_seconds()/3600
+#     recency = math.exp(-0.05 * hours)
+#     source_norm = article.source_rating / 10.0
+#     raw_weight = source_norm * article.llm_confidence * recency
+# # normalize
+# total = sum(raw_weight)
+# article.weight = raw_weight / total
+
+# Voting for stocks
+
+# Each article suggests companies (extracted by the LLM)
+
+# For each company, sum the article weights that recommend it → gives company score
+
+# Pick top-5 by score and pass their contexts to PredictionNode to craft final rationales.
+
+
+
+# 6) Rating update algorithm (T+1), improved approach (Bayesian-ish)
+
+# Instead of naive averaging, you can use a Bayesian updating approach mapping outcome to likelihood:
+
+# Map outcome to observation score o in [0..10]:
+
+# Correct → 10
+
+# Partial → 5
+
+# Wrong → 0
+
+# Then update with a learning rate depending on rating_count (older sources adapt slower):
+
+# alpha = 1 / (1 + rating_count)   # simple diminishing learning rate
+# new_rating = old_rating * (1 - alpha) + o * alpha
+# new_rating_count = rating_count + 1
+
+
+# This is equivalent to incremental averaging but expresses adaptation rate clearly. Use the Python script you already have, or replace averaging with the alpha formula for more control.
