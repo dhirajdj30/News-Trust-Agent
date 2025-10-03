@@ -6,7 +6,17 @@ from llm_node import llm
 
 mlflow_client()
 
-
+def json_formatter(llm_response):
+    import json
+    import re
+    # Regex to extract the first {...} block
+    match = re.search(r"\{.*\}", llm_response, re.DOTALL)
+    if match:
+        json_str = match.group()
+        data = json.loads(json_str)  # Convert to Python dict
+        return data                  # {'category': 'Seasonal', 'confidence': 0.95}
+    else:
+        print("No JSON found")
 
 def categorize_node(state):
     """
@@ -22,7 +32,7 @@ def categorize_node(state):
     # article_id = 101
     # title = "Heavy rains expected to boost umbrella sales in Mumbai"
     # content = "Analysts suggest seasonal demand will drive short-term stock gains for umbrella companies."
-    
+
 
     prompt_template = """
         You are a financial news classifier.
@@ -45,7 +55,7 @@ def categorize_node(state):
     response = llm.invoke(prompt)  # single step call
     print("----------------LLM RESPONSE----------: ", response.content)
     try:
-        result = json.loads(response.content)
+        result = json_formatter(response.content)
         category = result["category"]
         confidence = float(result["confidence"])
     except Exception:
