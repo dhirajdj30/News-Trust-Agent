@@ -83,6 +83,21 @@ RSS_FEED_URLS = [
     "https://www.business-standard.com/rss/markets-106.rss",
 ]
 
+RSS_FEED= {
+    "moneycontrol" : ["https://www.moneycontrol.com/rss/latestnews.xml"],
+    "livemint" : ["https://www.livemint.com/rss/money",
+                    "https://www.livemint.com/rss/markets"],
+    "investing":  ["https://in.investing.com/rss/stock_Stocks.rss",
+                    "https://in.investing.com/rss/stock_stock_picks.rss",
+                    "https://in.investing.com/rss/news_25.rss",
+                    "https://in.investing.com/rss/news_357.rss"],
+    # "https://nsearchives.nseindia.com/content/RSS/Annual_Reports.xml",
+    # "https://nsearchives.nseindia.com/content/RSS/Daily_Buyback.xml",
+    # "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml",
+    # "https://nsearchives.nseindia.com/content/RSS/Insider_Trading.xml",
+    "business-standard": ["https://www.business-standard.com/rss/markets-106.rss"],
+}
+
 CSV_FILE = "rssfeeds.csv"
 
 # Step 2: Function to clean text
@@ -96,20 +111,23 @@ def ingest_all_feeds():
 
     print(f"🔄 Running ingestion at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    for url in RSS_FEED_URLS:
-        print(f"📡 Fetching from: {url}")
-        feed = feedparser.parse(url)
+    for source, urls in RSS_FEED.items():
+        print(f"Source: {source}")
+        for url in urls:
+            print(f"  URL: {url}")
+            print(f"📡 Fetching from: {url}")
+            feed = feedparser.parse(url)
 
-        for entry in feed.entries[:20]:  # Limit to last 20 per feed
-            article = {
-                "source": url,
-                "title": clean_text(entry.title),
-                "link": entry.link,
-                "published": entry.get("published", datetime.now().isoformat()),
-                "summary": clean_text(entry.get("summary", "")),
-            }
-            print(clean_text(entry.get("summary","")))
-            all_articles.append(article)
+            for entry in feed.entries[:20]:  # Limit to last 20 per feed
+                article = {
+                    "source": source,
+                    "title": clean_text(entry.title),
+                    "link": entry.link,
+                    "published": entry.get("published", datetime.now().isoformat()),
+                    "summary": clean_text(entry.get("summary", "")),
+                }
+                print(clean_text(entry.get("summary","")))
+                all_articles.append(article)
 
     # Convert to DataFrame
     df = pd.DataFrame(all_articles)

@@ -1,24 +1,21 @@
-from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv  
-import httpx
+from dotenv import load_dotenv
 import yaml
 import os
 
-load_dotenv()
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-with open('config.yaml') as f:
-    config = yaml.safe_load(f)
+# Load env + config
+# load_dotenv()
+# with open("config.yaml") as f:
+#     config = yaml.safe_load(f)
 
-openai_token= os.getenv("openai_token")
-ops_bundle_path = config["mlflow"]["ops_bundle"]
-cert_client = httpx.Client(verify=ops_bundle_path)
+# Use Gemini API key from env
+gemini_api_key = os.getenv("GOOGLE_API_KEY")
 
-llm = ChatOpenAI(    
-    model=config["mistral"]["name"],
-    openai_api_key=openai_token,
-    openai_api_base=config["mistral"]["url"],
-    max_tokens=512,
+# Initialize Gemini LLM
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",   # e.g., "gemini-1.5-pro" or "gemini-1.5-flash"
+    google_api_key=gemini_api_key,
     temperature=0,
-    http_client=cert_client
+    max_output_tokens=512
 )
-

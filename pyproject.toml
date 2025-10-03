@@ -7,16 +7,18 @@ requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.14.2",
     "feedparser>=6.0.12",
+    "google-genai>=1.41.0",
+    "google-generativeai>=0.8.5",
+    "ipykernel>=6.30.1",
     "langchain>=0.3.27",
+    "langchain-google-genai>=2.0.10",
     "langchain-openai>=0.3.34",
     "langgraph>=0.6.8",
     "mlflow==3.2.0",
-    "mlflowauthclient",
     "pandas>=2.3.3",
+    "psutil>=7.1.0",
     "psycopg2-binary>=2.9.10",
     "python-dotenv>=1.1.0",
     "schedule>=1.2.2",
 ]
 
-[tool.uv.sources]
-mlflowauthclient = { url = "https://nexus3.intranet.qualys.com/nexus/repository/pypi-internal/packages/mlflowauthclient/0.0.2/mlflowauthclient-0.0.2-py3-none-any.whl" }
