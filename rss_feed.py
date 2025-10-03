@@ -108,7 +108,7 @@ def ingest_all_feeds():
                 "published": entry.get("published", datetime.now().isoformat()),
                 "summary": clean_text(entry.get("summary", "")),
             }
-            print(article)
+            print(clean_text(entry.get("summary","")))
             all_articles.append(article)
 
     # Convert to DataFrame
