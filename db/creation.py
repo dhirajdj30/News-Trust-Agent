@@ -1,27 +1,8 @@
-import psycopg2
-from dotenv import load_dotenv
-from psycopg2 import sql
-import os
-load_dotenv()
+from db.connection import get_connection
 
-
-dbname = os.getenv("dbname")
-user = os.getenv("user")
-password = os.getenv("password")
-host = os.getenv("host")
-port = os.getenv("port")
-
-
-# Connection config
-conn = psycopg2.connect(
-    dbname=dbname,
-    user=user,
-    password=password,
-    host=host,
-    port=port
-)
 
 # Create a cursor
+conn = get_connection()
 cur = conn.cursor()
 
 # Define schema creation queries
@@ -89,6 +70,19 @@ queries = [
         event_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         node_name TEXT,
         message JSONB
+    );
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS news_articles (
+        article_id SERIAL PRIMARY KEY,
+        source_id INT REFERENCES news_sources(source_id),
+        title TEXT NOT NULL,
+        content TEXT,
+        url TEXT,
+        published_at TIMESTAMP,
+        category_id INT REFERENCES categories(category_id),
+        llm_confidence FLOAT,
+        inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """
 ]
