@@ -72,6 +72,7 @@ queries = [
         message JSONB
     );
     """,
+
     """
     CREATE TABLE IF NOT EXISTS news_articles (
         article_id SERIAL PRIMARY KEY,
@@ -84,7 +85,9 @@ queries = [
         llm_confidence FLOAT,
         inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-    """
+    """,
+
+
 ]
 
 # Execute each query
