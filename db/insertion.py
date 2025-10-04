@@ -36,71 +36,41 @@ def save_category(article_id, category_name, confidence):
 
 
 
-def insert_articles_from_csv(csv_path):
+def insert_articles(source,url,title,link,published,summary):
     conn = get_connection()
     cur = conn.cursor()
 
-    # Ensure dummy source exists
+    # Ensure dummy source exists"
+
     cur.execute("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s) ON CONFLICT DO NOTHING;",
-                ("CSV Feed", "local_csv"))
+        (source, url))
     conn.commit()
-
-    article_ids = []
-    with open(csv_path, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            cur.execute("""
-                INSERT INTO news_articles (source_id, title, content, url, published_at)
-                VALUES (
-                    (SELECT source_id FROM news_sources WHERE source_name=%s),
-                    %s, %s, %s, %s
-                ) RETURNING article_id;
-            """, (
-                row["source"],
-                row["title"],
-                row["summary"],
-                row["link"],
-                row["published"]
-            ))
-
-            article_id = cur.fetchone()[0]
-            article_ids.append(article_id)
-
-    conn.commit()
-    cur.close()
-    conn.close()
-    return article_ids
-
-
-def insert_dummy_article():
-    # Create a cursor
-    conn = get_connection()
-    cur = conn.cursor()
-
-    # Ensure dummy source exists
-    cur.execute("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s) ON CONFLICT DO NOTHING;",
-                ("Moneycontrol", "https://www.moneycontrol.com/rss/latestnews.xml"))
-    conn.commit()
-
-    # Insert dummy article
+    cur.execute("SELECT article_id FROM news_articles WHERE url = %s;", (link,))
+    existing = cur.fetchone()
+    if existing:
+        print(f"⚠️ Duplicate found, skipping: {title}")
+        cur.close()
+        conn.close()
+        return None  # No new insert
     cur.execute("""
-        INSERT INTO news_articles (source_id, title, content, url)
+        INSERT INTO news_articles (source_id, title, content, url, published_at)
         VALUES (
             (SELECT source_id FROM news_sources WHERE source_name=%s),
-            %s, %s, %s
+            %s, %s, %s, %s
         ) RETURNING article_id;
     """, (
-        "Moneycontrol",
-        "Heavy rains expected to boost umbrella sales in Mumbai",
-        "Analysts suggest seasonal demand will drive short-term stock gains for umbrella companies.",
-        "https://dummynews.com/umbrella-sales"
+        source,
+        title,
+        summary,
+        link,
+        published
     ))
 
     article_id = cur.fetchone()[0]
+
     conn.commit()
     cur.close()
     conn.close()
-    print(f"✅ Dummy article inserted with ID {article_id}")
     return article_id
 
 
