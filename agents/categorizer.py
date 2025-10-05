@@ -1,4 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate
+# from langchain_core.prompts import ChatPromptTemplate
 import json
 from db.insertion import save_category
 from mlflow_client import mlflow_client
@@ -8,20 +8,20 @@ mlflow_client()
 
 
 
-def categorize_node(state):
+def categorize_node():
     """
     LangGraph node: classify article and store in DB
     state: {article_id, title, content}
     """
 
 
-    article_id = state["article_id"]
-    title = state["title"]
-    content = state.get("content", "")
+    # article_id = state["article_id"]
+    # title = state["title"]
+    # content = state.get("content", "")
 
-    # article_id = 101
-    # title = "Heavy rains expected to boost umbrella sales in Mumbai"
-    # content = "Analysts suggest seasonal demand will drive short-term stock gains for umbrella companies."
+    article_id = 101
+    title = "Heavy rains expected to boost umbrella sales in Mumbai"
+    content = "Analysts suggest seasonal demand will drive short-term stock gains for umbrella companies."
     
 
     prompt_template = """
