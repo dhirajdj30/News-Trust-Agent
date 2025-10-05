@@ -1,7 +1,9 @@
+
 from datetime import datetime
 from db.fetch import fetch_todays_articles
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
+
 
 def store_in_vector_db():
     print(f"🚀 Storing today's articles in vector DB ({datetime.now().date()})")
