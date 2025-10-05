@@ -5,8 +5,13 @@ build/
 dist/
 wheels/
 *.egg-info
+mlartifacts/
+mlruns/
+vector_store/
 
 # Virtual environments
 .venv
 
 *.env
+
+*config.yaml
