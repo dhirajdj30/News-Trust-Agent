@@ -25,8 +25,8 @@ def save_category(article_id, category_name, confidence):
 
     # Update article with classification
     cur.execute("""
-        UPDATE news_articles 
-        SET category_id = %s, llm_confidence = %s 
+        UPDATE news_articles
+        SET category_id = %s, llm_confidence = %s
         WHERE article_id = %s
     """, (category_id, confidence, article_id))
 
@@ -36,71 +36,41 @@ def save_category(article_id, category_name, confidence):
 
 
 
-def insert_articles_from_csv(csv_path):
+def insert_articles(source,url,title,link,published,summary):
     conn = get_connection()
     cur = conn.cursor()
 
-    # Ensure dummy source exists
+    # Ensure dummy source exists"
+
     cur.execute("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s) ON CONFLICT DO NOTHING;",
-                ("CSV Feed", "local_csv"))
+        (source, url))
     conn.commit()
-
-    article_ids = []
-    with open(csv_path, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            cur.execute("""
-                INSERT INTO news_articles (source_id, title, content, url, published_at)
-                VALUES (
-                    (SELECT source_id FROM news_sources WHERE source_name=%s),
-                    %s, %s, %s, %s
-                ) RETURNING article_id;
-            """, (
-                row["source"],
-                row["title"],
-                row["summary"],
-                row["link"],
-                row["published"]
-            ))
-
-            article_id = cur.fetchone()[0]
-            article_ids.append(article_id)
-
-    conn.commit()
-    cur.close()
-    conn.close()
-    return article_ids
-
-
-def insert_dummy_article():
-    # Create a cursor
-    conn = get_connection()
-    cur = conn.cursor()
-
-    # Ensure dummy source exists
-    cur.execute("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s) ON CONFLICT DO NOTHING;",
-                ("Moneycontrol", "https://www.moneycontrol.com/rss/latestnews.xml"))
-    conn.commit()
-
-    # Insert dummy article
+    cur.execute("SELECT article_id FROM news_articles WHERE url = %s;", (link,))
+    existing = cur.fetchone()
+    if existing:
+        print(f"⚠️ Duplicate found, skipping: {title}")
+        cur.close()
+        conn.close()
+        return None  # No new insert
     cur.execute("""
-        INSERT INTO news_articles (source_id, title, content, url)
+        INSERT INTO news_articles (source_id, title, content, url, published_at)
         VALUES (
             (SELECT source_id FROM news_sources WHERE source_name=%s),
-            %s, %s, %s
+            %s, %s, %s, %s
         ) RETURNING article_id;
     """, (
-        "Moneycontrol",
-        "Heavy rains expected to boost umbrella sales in Mumbai",
-        "Analysts suggest seasonal demand will drive short-term stock gains for umbrella companies.",
-        "https://dummynews.com/umbrella-sales"
+        source,
+        title,
+        summary,
+        link,
+        published
     ))
 
     article_id = cur.fetchone()[0]
+
     conn.commit()
     cur.close()
     conn.close()
-    print(f"✅ Dummy article inserted with ID {article_id}")
     return article_id
 
 
@@ -111,35 +81,35 @@ def all_insertion():
     # Example INSERTS
     insert_queries = [
         # Insert into news_sources
-        ("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s)", 
+        ("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s)",
         ("Moneycontrol", "https://www.moneycontrol.com")),
-        
-        ("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s)", 
+
+        ("INSERT INTO news_sources (source_name, source_url) VALUES (%s, %s)",
         ("CNBC", "https://www.cnbc.com")),
 
         # Insert into categories
-        ("INSERT INTO categories (category_name) VALUES (%s)", 
+        ("INSERT INTO categories (category_name) VALUES (%s)",
         ("Finance",)),
 
-        ("INSERT INTO categories (category_name) VALUES (%s)", 
+        ("INSERT INTO categories (category_name) VALUES (%s)",
         ("Sports",)),
 
-        ("INSERT INTO categories (category_name) VALUES (%s)", 
+        ("INSERT INTO categories (category_name) VALUES (%s)",
         ("Seasonal",)),
 
         # Insert into news_ratings
-        ("INSERT INTO news_ratings (source_id, category_id, rating) VALUES (%s, %s, %s)", 
+        ("INSERT INTO news_ratings (source_id, category_id, rating) VALUES (%s, %s, %s)",
         (1, 1, 7.5)),  # Moneycontrol, Finance
-        
-        ("INSERT INTO news_ratings (source_id, category_id, rating) VALUES (%s, %s, %s)", 
+
+        ("INSERT INTO news_ratings (source_id, category_id, rating) VALUES (%s, %s, %s)",
         (2, 2, 6.0)),  # CNBC, Sports
 
         # Insert into predictions
-        ("INSERT INTO predictions (source_id, category_id, stock_symbol, target_date) VALUES (%s, %s, %s, %s)", 
+        ("INSERT INTO predictions (source_id, category_id, stock_symbol, target_date) VALUES (%s, %s, %s, %s)",
         (1, 1, "TCS", "2025-10-05")),
 
         # Insert into feedback
-        ("INSERT INTO feedback (prediction_id, user_id, outcome, rating) VALUES (%s, %s, %s, %s)", 
+        ("INSERT INTO feedback (prediction_id, user_id, outcome, rating) VALUES (%s, %s, %s, %s)",
         (1, "user123", "Correct", 5)),
 
         # Insert into prediction_sources
@@ -163,3 +133,5 @@ def all_insertion():
     cur.close()
     conn.close()
 
+if __name__ == "__main__":
+    all_insertion()

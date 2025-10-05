@@ -84,7 +84,9 @@ queries = [
         llm_confidence FLOAT,
         inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-    """
+    """,
+
+
 ]
 
 # Execute each query
