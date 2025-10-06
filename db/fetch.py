@@ -1,6 +1,6 @@
 from db.connection import get_connection
 from psycopg2 import sql
-
+import pandas as pd
 
 
 def fetch_table(table_name):
@@ -43,3 +43,30 @@ def fetch_article_by_id(article_id):
     cur.close()
     conn.close()
     return row
+
+
+def fetch_predictions():
+    conn = get_connection()
+    df = pd.read_sql("""
+        SELECT p.prediction_id, p.predicted_at, p.target_date,
+               p.stocks_list, c.category_name, s.source_name, nr.rating
+        FROM predictions p
+        JOIN categories c ON p.category_id = c.category_id
+        JOIN news_sources s ON p.source_id = s.source_id
+        JOIN news_ratings nr ON s.source_id = nr.source_id AND c.category_id = nr.category_id
+        ORDER BY p.predicted_at DESC LIMIT 20
+    """, conn)
+    conn.close()
+    return df
+
+def fetch_ratings():
+    conn = get_connection()
+    df = pd.read_sql("""
+        SELECT s.source_name, c.category_name, nr.rating, nr.rating_count
+        FROM news_ratings nr
+        JOIN news_sources s ON nr.source_id = s.source_id
+        JOIN categories c ON nr.category_id = c.category_id
+        ORDER BY s.source_name, c.category_name
+    """, conn)
+    conn.close()
+    return df

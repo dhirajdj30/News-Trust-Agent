@@ -23,6 +23,7 @@ dependencies = [
     "python-dotenv>=1.1.0",
     "schedule>=1.2.2",
     "sentence-transformers>=5.1.1",
+    "streamlit>=1.50.0",
     "torch==2.2.2",
 ]
 

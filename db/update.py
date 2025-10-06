@@ -101,6 +101,17 @@ def update_rating(prediction_id, outcome):
     return True
 
 
+def update_feedback(prediction_id, outcome):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE predictions SET feedback = %s, feedback_date = %s
+        WHERE prediction_id = %s
+    """, (outcome, datetime.utcnow(), prediction_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+
 if __name__ == "__main__":
     # Example usage:
     # After user feedback on prediction 12:
