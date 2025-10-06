@@ -95,6 +95,16 @@ Predictions are evaluated after **1 trading day (T+1)**:
 
 This way, the system **learns which sources are more reliable** in each category.
 
+
+---
+
+##  DB Schema
+
+![DB Schema](db_schema.png "Database Schema")
+
+---
+
+
 ---
 
 ## 🧩 Roadmap

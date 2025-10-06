@@ -1,6 +1,10 @@
 import psycopg2
 from datetime import datetime
 
+from db.connection import get_connection
+
+
+
 # Feedback scoring weights
 OUTCOME_SCORES = {
     "Correct": 10,
@@ -9,13 +13,7 @@ OUTCOME_SCORES = {
 }
 
 def update_news_rating(prediction_id, feedback_outcome, star_rating=None):
-    conn = psycopg2.connect(
-        dbname="newsdb",
-        user="youruser",
-        password="yourpass",
-        host="localhost",
-        port="5432"
-    )
+    conn = get_connection()
     cur = conn.cursor()
 
     # Get source_id and category_id from prediction
@@ -66,20 +64,10 @@ def update_news_rating(prediction_id, feedback_outcome, star_rating=None):
 
     print(f"Updated rating for source_id={source_id}, category_id={category_id}")
 
-# Example usage:
-# After user feedback on prediction 12:
-update_news_rating(prediction_id=12, feedback_outcome="Correct", star_rating=4)
 
-
-
-
-import psycopg2
-from datetime import datetime
-
-OUTCOME_SCORES = {"Correct": 10, "Partial": 5, "Wrong": 0}
 
 def update_rating(prediction_id, outcome):
-    conn = psycopg2.connect(dbname="newsdb", user="youruser", password="pwd", host="localhost")
+    conn = get_connection()
     cur = conn.cursor()
 
     cur.execute("SELECT source_id, category_id FROM predictions WHERE prediction_id = %s", (prediction_id,))
@@ -111,3 +99,9 @@ def update_rating(prediction_id, outcome):
     cur.close()
     conn.close()
     return True
+
+
+if __name__ == "__main__":
+    # Example usage:
+    # After user feedback on prediction 12:
+    update_news_rating(prediction_id=12, feedback_outcome="Correct", star_rating=4)

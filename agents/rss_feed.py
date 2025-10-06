@@ -12,11 +12,11 @@ RSS_FEED= {
                     "https://in.investing.com/rss/stock_stock_picks.rss",
                     "https://in.investing.com/rss/news_25.rss",
                     "https://in.investing.com/rss/news_357.rss"],
+    "business-standard": ["https://www.business-standard.com/rss/markets-106.rss"],
     # "nseindia":  ["https://nsearchives.nseindia.com/content/RSS/Annual_Reports.xml",
     #                 "https://nsearchives.nseindia.com/content/RSS/Daily_Buyback.xml",
     #                 "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml",
     #                 "https://nsearchives.nseindia.com/content/RSS/Insider_Trading.xml"],
-    "business-standard": ["https://www.business-standard.com/rss/markets-106.rss"],
 }
 
 CSV_FILE = "rssfeeds.csv"
