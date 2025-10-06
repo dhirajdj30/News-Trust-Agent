@@ -101,6 +101,8 @@ This way, the system **learns which sources are more reliable** in each category
 ##  DB Schema
 
 ![DB Schema](db_schema.png "Database Schema")
+![DB Schema](db.jpg "Database Schema")
+
 
 ---
 
