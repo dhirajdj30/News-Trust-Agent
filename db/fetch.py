@@ -31,3 +31,16 @@ def fetch_todays_articles():
     cur.close()
     conn.close()
     return rows
+
+def fetch_article_by_id(article_id):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT article_id, title, content, url, published_at
+        FROM news_articles
+        WHERE article_id = %s;
+    """, (article_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    return row
