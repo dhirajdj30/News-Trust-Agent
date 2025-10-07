@@ -15,19 +15,20 @@ def fetch_relevant_articles(state):
     if not results:
         raise ValueError("No relevant articles found.")
 
-    # Take the first article metadata
-    article_id = results[0]
+    # # Take the first article metadata
+    # article_id = results[0]
 
     # Fetch full article details from DB
-    article = fetch_article_by_id(article_id)
-    if article:
-        article_id, title, content, url, published_at = article
-        state["article_id"] = article_id
-        state["title"] = title
-        state["content"] = content
-        print(f"✅ Fetched Article ID: {article_id}, Title: {title}")
-    else:
-        raise ValueError(f"Article with ID {article_id} not found.")
+    for article_id in results:
+        article = fetch_article_by_id(article_id)
+        if article:
+            article_id, title, content, url, published_at = article
+            state["article_id"] = article_id
+            state["title"] = title
+            state["content"] = content
+            print(f"✅ Fetched Article ID: {article_id}, Title: {title}")
+        else:
+            raise ValueError(f"Article with ID {article_id} not found.")
 
     state["step"] = "fetch_relevant_articles"
     print("-----------------------------------------")

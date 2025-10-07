@@ -1,10 +1,3 @@
-# def main():
-#     print("Hello from news-trust-agent!")
-
-
-# if __name__ == "__main__":
-#     main()
-
 from langgraph.graph import StateGraph, START, END, MessagesState
 from agents.fetch_article import fetch_relevant_articles
 from agents.categorizer import categorize_node

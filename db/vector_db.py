@@ -50,4 +50,4 @@ def retrieve_articles(query, top_k=5):
 if __name__ == "__main__":
     store_in_vector_db()
     # # Example retrieval
-    # retrieve_articles("stock market trends today", top_k=3)
+    retrieve_articles("top 3 stock to buy today", top_k=3)

@@ -19,7 +19,6 @@ RSS_FEED= {
     #                 "https://nsearchives.nseindia.com/content/RSS/Insider_Trading.xml"],
 }
 
-CSV_FILE = "rssfeeds.csv"
 
 # Step 2: Function to clean text
 def clean_text(html_text):

@@ -12,11 +12,13 @@ dependencies = [
     "google-generativeai>=0.8.5",
     "ipykernel>=6.30.1",
     "langchain>=0.3.27",
-    "langchain-community>=0.3.30",
+    "langchain-community>=0.3.27",
     "langchain-google-genai>=2.0.10",
     "langchain-openai>=0.3.34",
     "langgraph>=0.6.8",
     "mlflow==3.2.0",
+    "mlflowauthclient",
+    "numpy==1.26.4",
     "pandas>=2.3.3",
     "psutil>=7.1.0",
     "psycopg2-binary>=2.9.10",
@@ -26,4 +28,7 @@ dependencies = [
     "streamlit>=1.50.0",
     "torch==2.2.2",
 ]
+
+[tool.uv.sources]
+mlflowauthclient = { url = "https://nexus3.intranet.qualys.com/nexus/repository/pypi-internal/packages/mlflowauthclient/0.0.2/mlflowauthclient-0.0.2-py3-none-any.whl" }
 

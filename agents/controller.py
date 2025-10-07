@@ -1,5 +1,4 @@
-from langchain_core.prompts import ChatPromptTemplate
-from llm_node import llm
+from agents.llm_node import get_llm
 
 def controller_node(state):
     """
@@ -23,6 +22,7 @@ def controller_node(state):
     # context = f"Current state:\n{state.model_dump_json(indent=2)}"
     full_prompt = system_prompt 
 
+    llm = get_llm()
     response = llm.invoke(full_prompt)
 
     import json, re

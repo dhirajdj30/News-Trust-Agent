@@ -15,3 +15,5 @@ vector_store/
 *.env
 
 *config.yaml
+
+ops_bundle.pem
