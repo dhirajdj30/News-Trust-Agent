@@ -1,7 +1,4 @@
 from db.connection import get_connection
-import csv
-
-
 
 
 def save_category(article_id, category_name, confidence):

@@ -1,17 +1,26 @@
 
 from datetime import datetime
 from db.fetch import fetch_todays_articles
+from db.check_last_update import latest_news_available
+from agents.rss_feed import ingest_all_feeds
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
-
+import os
 
 def store_in_vector_db():
     print(f"🚀 Storing today's articles in vector DB ({datetime.now().date()})")
-
+    
     articles = fetch_todays_articles()
     if not articles:
         print("No new articles found for today.")
         return
+    
+    # Remove previous FAISS index if it exists
+    index_path = "./vector_store/faiss_index"
+    if os.path.exists(index_path):
+        print("🧹 Removing previous FAISS index...")
+        import shutil
+        shutil.rmtree(index_path)
 
     # Using HuggingFace sentence transformer embeddings
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")

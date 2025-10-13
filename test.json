@@ -1,7 +1,2 @@
-{
-    "query": "give me top 5 stocks to buy",
-    "article_id": 5601, 
-    "title": "Penny stock under  ₹2 declares an increase of QIP size by  ₹2,500 crore", 
-    "content": "Penny stock under  ₹2: Excel Realty N Infra share price has gained 12% in one month, and has jumped 90% in three months. The penny stock has rallied 138% in six months and has risen 35% on a year-to-date (YTD) basis. Over the past one year, the smallcap stock has surged 128%.", 
-    "step": "fetch_relevant_articles"
-}
+[{"query": "give me top 5 stocks to buy", "article_id": 5601, "title": "Penny stock under  ₹2 declares an increase of QIP size by  ₹2,500 crore", "content": "Penny stock under  ₹2: Excel Realty N Infra share price has gained 12% in one month, and has jumped 90% in three months. The penny stock has rallied 138% in six months and has risen 35% on a year-to-date (YTD) basis. Over the past one year, the smallcap stock has surged 128%.", "step": "categorize", "category": "Finance", "confidence": 0.95},
+{"query": "give me top 5 stocks to buy", "article_id": 5601, "title": "Penny stock under  ₹2 declares an increase of QIP size by  ₹2,500 crore", "content": "Penny stock under  ₹2: Excel Realty N Infra share price has gained 12% in one month, and has jumped 90% in three months. The penny stock has rallied 138% in six months and has risen 35% on a year-to-date (YTD) basis. Over the past one year, the smallcap stock has surged 128%.", "step": "categorize", "category": "Finance", "confidence": 0.95}]

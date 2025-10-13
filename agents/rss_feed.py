@@ -4,21 +4,37 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from db.insertion import insert_articles
 
-RSS_FEED= {
-    "moneycontrol" : ["https://www.moneycontrol.com/rss/latestnews.xml"],
-    "livemint" : ["https://www.livemint.com/rss/money",
-                    "https://www.livemint.com/rss/markets"],
-    "investing":  ["https://in.investing.com/rss/stock_Stocks.rss",
-                    "https://in.investing.com/rss/stock_stock_picks.rss",
-                    "https://in.investing.com/rss/news_25.rss",
-                    "https://in.investing.com/rss/news_357.rss"],
-    "business-standard": ["https://www.business-standard.com/rss/markets-106.rss"],
-    # "nseindia":  ["https://nsearchives.nseindia.com/content/RSS/Annual_Reports.xml",
-    #                 "https://nsearchives.nseindia.com/content/RSS/Daily_Buyback.xml",
-    #                 "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml",
-    #                 "https://nsearchives.nseindia.com/content/RSS/Insider_Trading.xml"],
-}
+# RSS_FEED= {
+#     "money": ["https://www.moneycontrol.com/personal-finance/investing/"],
+#     "moneycontrol" : ["https://www.moneycontrol.com/rss/latestnews.xml"],
+#     "livemint" : ["https://www.livemint.com/rss/money",
+#                     "https://www.livemint.com/rss/markets"],
+#     "investing":  ["https://in.investing.com/rss/stock_Stocks.rss",
+#                     "https://in.investing.com/rss/stock_stock_picks.rss",
+#                     "https://in.investing.com/rss/news_25.rss",
+#                     "https://in.investing.com/rss/news_357.rss"],
+#     "business-standard": ["https://www.business-standard.com/rss/markets-106.rss"],
+#     # "nseindia":  ["https://nsearchives.nseindia.com/content/RSS/Annual_Reports.xml",
+#     #                 "https://nsearchives.nseindia.com/content/RSS/Financial_Results.xml",
+#     #                 "https://nsearchives.nseindia.com/content/RSS/Insider_Trading.xml"],
+# }
 
+RSS_FEED= {
+    "CNBC": [
+        "https://www.cnbctv18.com/commonfeeds/v1/cne/rss/latest.xml",
+        "https://www.cnbctv18.com/commonfeeds/v1/cne/rss/market.xml"
+        ],
+    # "business-standard": ["https://www.business-standard.com/rss/markets-106.rss"],
+	"NDTV" : ["https://www.ndtvprofit.com/stories.rss"],
+	"Times-of-India": ["https://timesofindia.indiatimes.com/rssfeeds/1898055.cms"],
+	"Livemint": ["https://www.livemint.com/rss/markets"],
+	"5paisa": ["https://www.5paisa.com/rss/news.xml"],
+    "Moneyworksforme": ["https://www.moneyworks4me.com/company/news/latest-stock-news-rss/equity-news"],
+	# "Tradebrains": ["https://tradebrains.in/blog/feed/"],
+	"Equitypandit": ["https://www.equitypandit.com/category/latest-news/feed/"],
+	"Economic-Times": ["https://economictimes.indiatimes.com/markets/stocks/rssfeeds/2146842.cms"],
+    "Thehindubusinessline":["https://www.thehindubusinessline.com/markets/stock-markets/feeder/default.rss"]
+}
 
 # Step 2: Function to clean text
 def clean_text(html_text):
@@ -45,13 +61,12 @@ def ingest_all_feeds():
                 summary=clean_text(entry.get("summary", ""))
                 link=entry.link
                 published=entry.get("published", datetime.now().isoformat())
-
-                article_id= insert_articles(source,url,title,link,published,summary)
+                
+                article_id = None
+                article_id = insert_articles(source,url,title,link,published,summary)
                 if article_id:
                     cnt += 1
                 print(f"    ✅ Inserted article ID: {article_id} | Title: {title}")
-
-
 
     print(f"✅ Ingestion complete. Total articles inserted: {cnt}")
 

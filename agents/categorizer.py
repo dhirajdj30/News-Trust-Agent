@@ -25,7 +25,7 @@ def categorize_node(state):
     LangGraph node: classify an article using LLM and store result in DB.
     Input/Output: State object with fields (article_id, title, content, summary, etc.)
     """
-
+    
     article_id = state.get("article_id", 101)
 
 
@@ -68,6 +68,8 @@ def categorize_node(state):
 
     state["step"] = "categorize"
     print("-----------------------------------------")
+    state["category"] = category
+    state["confidence"] = confidence
     print(state)
     return state
 
@@ -77,15 +79,20 @@ if __name__ == "__main__":
     from langgraph.graph import MessagesState
 
     class TestState(MessagesState):
-        article_id: int = 101
-        title: str = "Heavy rains expected to boost umbrella sales in Mumbai"
-        content: str = "Analysts suggest seasonal demand will drive short-term stock gains for umbrella companies."
-        summary: str = ""
+        article_id: int | None = None
+        query: str = "give me top 5 stocks to buy"
+        title: str | None = None
+        content: str | None = None
+        category: str | None = None
+        confidence: float | None = None
+        summary: str | None = None
+        step: str | None = None
+        type: str | None = None
 
     test_state = TestState()
     test_state["article_id"] = 101
-    test_state["title"] = "Heavy rains expected to boost umbrella sales in Mumbai"
-    test_state["content"] = "Analysts suggest seasonal demand will drive short-term stock gains for umbrella companies."
+    test_state["title"] = "TCS share price falls after Q2 results. Should you buy or sell the large-cap IT stock?"
+    test_state["content"] = "TCS share price has fallen over 2% in one month and more than 10% in three months. The largecap IT stock has declined 6% in six months and has dropped over 26% on a year-to-date (YTD) basis. Over the past one year, TCS share price has fallen 28% and it has declined 16% in two years."
 
     updated_state = categorize_node(test_state)
     print("Updated State:", updated_state)
